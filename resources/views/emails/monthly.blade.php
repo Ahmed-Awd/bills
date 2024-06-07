@@ -52,11 +52,11 @@
 <body>
 <div class="email-container">
     <div class="email-header">
-        <h2>Single Invoice</h2>
+        <h2>Monthly Invoices</h2>
     </div>
     <div class="email-body">
         <p>Dear {{$user->name}},</p>
-        <p>As requested, please find your invoice with the code <strong>{{ $code }}</strong> attached to this email.</p>
+        <p>As requested, please find your monthly invoices attached to this email.</p>
         <p>Thank you for using our services</p>
     </div>
 </div>

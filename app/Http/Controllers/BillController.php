@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\InvoiceMail;
+use App\Mail\MonthlyInovicesMail;
 use App\Mail\SingleInvoiceMail;
 use App\Models\Bill;
 use App\Repositories\BillRepository;
@@ -32,16 +33,18 @@ class BillController extends Controller
     {
         $data = json_decode($bill->data, true);
         Mail::to($bill->user->email)->queue(new SingleInvoiceMail($data, $bill->slug, $bill->user));
-        return response()->json(['message' => 'Invoice sent successfully!']);
+        return response()->json(['message' => 'Invoice sent successfully']);
     }
 
     public function sendMonthlyInvoicesViaMail(Request $request,PrepareInvoicesService $invoicesService)
     {
-        $filter = ["user_id" => Auth::id()];
+        $user = Auth::user();
+        $filter = ["user_id" => $user->id];
         $selects = ["slug", "data"];
         $records = $this->billRepository->get($filter, false, [], $selects, "this-month", "created_at", "id", "asc", false);
         $invoices = $invoicesService->handle($records);
-
+        Mail::to($user->email)->queue(new MonthlyInovicesMail($invoices, $user));
+        return response()->json(['message' => 'Invoices sent successfully']);
     }
 
 }

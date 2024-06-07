@@ -57,13 +57,14 @@ class MonthlyInovicesMail extends Mailable
     public function attachments(): array
     {
         $attachments = [];
+        $i = 1;
         foreach ($this->files as $file){
-
+            $tmpFile =  PDF::loadView('invoice', ['data' => $file]);
+            $attachments[] =  Attachment::fromData(fn () => $tmpFile->output(), "invoice-$i.pdf")
+                ->withMime('application/pdf');
+            $i++;
         }
-        $pdf = PDF::loadView('invoice', ['data' => $this->data]);
-        return [
-            Attachment::fromData(fn () => $pdf->output(), 'invoice.pdf')
-                ->withMime('application/pdf'),
-        ];
+
+        return $attachments;
     }
 }
